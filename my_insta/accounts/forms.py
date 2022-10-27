@@ -3,11 +3,9 @@ from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.contrib.auth import get_user_model
 
-# from accounts.models import Profile
-
 
 class LoginForm(forms.Form):
-    username = forms.CharField(required=True, label='Логин')
+    email = forms.CharField(required=True, label='Логин')
     password = forms.CharField(required=True, label='Пароль', widget=forms.PasswordInput)
     next = forms.CharField(required=False, widget=forms.HiddenInput)
 
@@ -18,8 +16,8 @@ class CustomUserCreationForm(forms.ModelForm):
 
 
     class Meta:
-        model = User
-        fields = ('username', 'password', 'password_confirm', 'first_name', 'last_name', 'email',)
+        model = get_user_model()
+        fields = ('username', 'password', 'password_confirm', 'first_name', 'last_name', 'email', 'avatar', 'birthday')
 
         def clean(self):
             cleaned_data = super().clean()
@@ -34,18 +32,11 @@ class CustomUserCreationForm(forms.ModelForm):
             user.groups.add('user')
             if commit:
                 user.save()
-                # Profile.objects.get_or_create(user=user)
             return user
 
 
 class UserChangeForm(forms.ModelForm):
     class Meta:
         model = get_user_model()
-        fields = ('first_name', 'last_name', 'email')
+        fields = ('first_name', 'last_name', 'email', 'avatar', 'birthday')
         labels = {'first_name': 'Имя', 'last_name': 'Фамилия', 'email': 'Email'}
-
-
-# class ProfileChangeForm(forms.ModelForm):
-#     class Meta:
-#         model = Profile
-#         fields = ('avatar', 'birthday')
