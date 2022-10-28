@@ -6,26 +6,23 @@
 <br>
 <br>
 <br>
-<article class="media">
 
-  <div class="media-left">
-      <figure class="image is-256x256">
-        {% if account.avatar %}
-          <img class="is-rounded" src="{{ account.avatar.url }}">
-        {% else %}
-          <img class="is-rounded" src="default/default-user.png">
-        {% endif %}
-      </figure>
+
+  <div class="row">
+      <div class="col-2">
+            {% if account.avatar %}
+              <img src="{{ account.avatar.url }}">
+            {% else %}
+              <img src="default/default-user.png">
+            {% endif %}
+
+      </div>
+      <div class="col-6">
+          <h1 >{% if account.username %}{{ account.username }} {{ profile.first_name }} {% endif %}</h1>
+          <h2 >@{{ account.username }}</h2>
+
+      </div>
   </div>
-
-  <div class="media-content">
-
-    <div class="content">
-      <h1 style="font-weight: bold;" class="title is-1">{% if account.username %}{{ account.username }} {{ profile.first_name }} {% endif %}</h1>
-      <h2 class="subtitle is-3">@{{ account.username }}</h2>
-
-
-    </div>
 
 
 <nav class="level is-mobile">
