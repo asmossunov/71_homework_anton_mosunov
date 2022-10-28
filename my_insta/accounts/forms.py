@@ -4,6 +4,10 @@ from django.core.exceptions import ValidationError
 from django.contrib.auth import get_user_model
 
 
+
+from accounts.models import Gender
+
+
 class LoginForm(forms.Form):
     email = forms.CharField(required=True, label='Логин')
     password = forms.CharField(required=True, label='Пароль', widget=forms.PasswordInput)
@@ -11,13 +15,22 @@ class LoginForm(forms.Form):
 
 
 class CustomUserCreationForm(forms.ModelForm):
+    username = forms.CharField(label='Логин')
     password = forms.CharField(label='Пароль', strip=False, required=True, widget=forms.PasswordInput)
     password_confirm = forms.CharField(label='Подтвердите пароль', strip=False, required=True, widget=forms.PasswordInput)
+    phone = forms.CharField(label='Номер телефона')
+    first_name = forms.CharField(label='Имя')
+    gender = forms.ModelChoiceField(
+        label='Пол',
+        queryset=Gender.objects.all(),
+
+    )
 
 
     class Meta:
         model = get_user_model()
-        fields = ('username', 'password', 'password_confirm', 'first_name', 'last_name', 'email', 'avatar', 'birthday')
+        fields = ('username',  'email', 'avatar', 'password', 'password_confirm',
+                  'first_name', 'about_user', 'phone', 'gender')
 
         def clean(self):
             cleaned_data = super().clean()
@@ -30,6 +43,7 @@ class CustomUserCreationForm(forms.ModelForm):
             user = super().save(commit=False)
             user.set_password(self.cleaned_data.get('password'))
             user.groups.add('user')
+
             if commit:
                 user.save()
             return user
@@ -38,5 +52,6 @@ class CustomUserCreationForm(forms.ModelForm):
 class UserChangeForm(forms.ModelForm):
     class Meta:
         model = get_user_model()
-        fields = ('first_name', 'last_name', 'email', 'avatar', 'birthday')
+        fields = ('first_name', 'last_name', 'email', 'avatar', 'birthday', 'first_name',
+                  'last_name', 'about_user', 'phone', 'gender',)
         labels = {'first_name': 'Имя', 'last_name': 'Фамилия', 'email': 'Email'}

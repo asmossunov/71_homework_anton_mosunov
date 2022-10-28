@@ -1,26 +1,69 @@
 {% extends 'base.html' %}
 
-{% block title %}Пользователь{% endblock %}
-{% block menu %}
-    <li><a href="{% url 'change' user_obj.pk %}">Редактировать</a></li>
-    <li><a href="#">Смена пароля</a></li>
-{% endblock %}
+{% load static %}
 
 {% block content %}
-    <br>
 <br>
 <br>
 <br>
-    <h1>Личная страница пользователя {{ user_obj.get_full_name|default:user_obj.username }}</h1>
-    {% if user_obj.profile.avatar %}
-        <img class="avatar" src="{{ user_obj.profile.avatar.url }}" width="250" height="250" alt="user picture">
-    {% endif %}
-    <p>Имя пользователя: {{ user_obj.username }}</p>
-    <p>Имя: {{ user_obj.first_name }}</p>
-    <p>Фамилия: {{ user_obj.last_name }}</p>
-    <p>Дата рождения: {{ user_obj.profile.birthday|date:'d.m.Y' }}</p>
-    <p>Почта: {{ user_obj.email }}</p>
+<article class="media">
 
-    <h2 class="text-center clear">Избранные публикации:</h2>
-    {% include 'partial/article_list.html' %}
+  <div class="media-left">
+      <figure class="image is-256x256">
+        {% if account.avatar %}
+          <img class="is-rounded" src="{{ account.avatar.url }}">
+        {% else %}
+          <img class="is-rounded" src="default/default-user.png">
+        {% endif %}
+      </figure>
+  </div>
+
+  <div class="media-content">
+
+    <div class="content">
+      <h1 style="font-weight: bold;" class="title is-1">{% if account.username %}{{ account.username }} {{ profile.first_name }} {% endif %}</h1>
+      <h2 class="subtitle is-3">@{{ account.username }}</h2>
+
+
+    </div>
+
+
+<nav class="level is-mobile">
+  <div class="level-item has-text-centered">
+    <div>
+      <p class="heading">Posts</p>
+      {% if not posts_count is None %}
+      <p class="title">{{ posts_count }}</p>
+      {% else %}
+      <p class="title">0</p>
+      {% endif %}
+    </div>
+  </div>
+  <div class="level-item has-text-centered">
+    <div>
+      <p class="heading">Following</p>
+      <p class="title">{{ following_count }}</p>
+    </div>
+  </div>
+  <div class="level-item has-text-centered">
+    <div>
+      <p class="heading">Followers</p>
+      <p class="title">{{ followers_count }}</p>
+    </div>
+  </div>
+  <div class="level-item has-text-centered">
+    <div>
+      <p class="heading">"Почта"</p>
+      <p class="title">{{ account.email }}</p>
+    </div>
+  </div>
+  <div class="level-item has-text-centered">
+    <div>
+      <p class="heading">Телефон</p>
+      <p class="title">{{ account.phone }}</p>
+    </div>
+  </div>
+
+</nav>
 {% endblock %}
+
