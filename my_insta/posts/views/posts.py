@@ -1,16 +1,22 @@
 from django.views.generic import CreateView, View, FormView, DetailView, UpdateView, DeleteView
 from django.urls import reverse
 from django.shortcuts import redirect, get_object_or_404
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.core.exceptions import PermissionDenied
 
 from posts.forms import PostForm
 from posts.models import Post
-
 from posts.models import Comment
-
 from accounts.forms import CommentForm
 
 
-class PostCreateView(CreateView):
+class GroupPermission(UserPassesTestMixin):
+    groups = []
+
+    def test_func(self):
+        return self.request.user.groups.filter(name__in=self.groups).exists()
+
+class PostCreateView(LoginRequiredMixin, CreateView):
     template_name = 'create_post.html'
     form_class = PostForm
     model = Post
@@ -42,7 +48,7 @@ class PostView(DetailView):
         return context
 
 
-class PostUpdateView(UpdateView):
+class PostUpdateView(LoginRequiredMixin, UpdateView):
     template_name = 'post_update.html'
     form_class = PostForm
     model = Post
@@ -54,7 +60,7 @@ class PostUpdateView(UpdateView):
 
 
 
-class PostLikeView(View):
+class PostLikeView(LoginRequiredMixin, View):
     model = Post
 
     def get(self, request, *args, **kwargs):
@@ -65,7 +71,7 @@ class PostLikeView(View):
         return redirect('index')
 
 
-class CommentCreateView(FormView):
+class CommentCreateView(LoginRequiredMixin, FormView):
     form_class = CommentForm
 
     def post(self, request, *args, **kwargs):
@@ -81,7 +87,7 @@ class CommentCreateView(FormView):
         return redirect('index')
 
 
-class PostDeleteView(DeleteView):
+class PostDeleteView(LoginRequiredMixin, DeleteView):
     template_name = 'post_confirm_delete.html'
     model = Post
     success_url = '/'
