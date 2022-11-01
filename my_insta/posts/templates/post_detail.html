@@ -6,40 +6,20 @@
 <div class="homebody">
     <div class="container">
         <div class="w3-card-6" style="width:56%">
-
                 <div class="container">
-
-
                     <div class="imagepadding">
-
-                        <!-- BootStrap Class For adding Border arround picture -->
                         <div class="panel panel-primary">
-
-                            <!-- SECTION 1 PROFILE & user name -->
-
-                            <!-- Profile Picture and User name for account -->
-
                             <p class="usernamehome-dp">
                                 <img src="{{ post.author.avatar.url }}" class="circlehome-dp" alt="signuplogo ">
-
                                 <a href="{% url 'profile' post.author.pk %}"><strong> "{{ post.author.username }}" </strong></a>
-
-
-
                             </p>
-
-                            <!-- SECTION 2 (IMAGE) -->
-                            <!-- POSTED IMAGE -->
-
                                 <img src="{{ post.image.url }}" class="img-responsive" style="width:100%;margin-left: 0%;margin-top:15px; ">
 
 
-                            <!--Like & Comment Section -->
                             <div class="container">
                                 <div class='likesect'>
 
                                     <span class="like-row">
-
                                         {% if request.user not in post.user_likes.all %}
                                             <a href="{% url 'like' post.pk %}"><img class="likedhrt" src="{% static 'images/like.png' %}" alt="liked picture"class="img-responsive"> </a>
                                         {% else %}
@@ -48,11 +28,8 @@
 
                                         <p><strong>{{post.user_likes.all.count}} отметок "Нравится"</strong> </p>
 
-
                                         </p>
                                     </span>
-
-                            <!-- Caption Section -->
 
                             <strong> "{{ post.author.username }}" </strong>
                             <p></strong> {{post.description}}</p>
@@ -78,26 +55,20 @@
                                 </form>
                             </div>
 
-                            <div class="row">
-                                <div class="col-2">
-                                    <p><a class="btn btn-primary" href="{% url 'post_update' post.pk %}">Редактировать пост</a></p>
+                            {% if request.user == post.author %}
+                                <div class="row">
+                                    <div class="col-2">
+                                        <p><a class="btn btn-primary" href="{% url 'post_update' post.pk %}">Редактировать пост</a></p>
+                                    </div>
+                                    <div class="col-2">
+                                        <p><a class="btn btn-primary" href="{% url 'post_delete' post.pk %}">Удалить пост</a></p>
+                                    </div>
+                                    </div>
                                 </div>
-                                <div class="col-2">
-                                    <p><a class="btn btn-primary" href="{% url 'post_delete' post.pk %}">Удалить пост</a></p>
-                                </div>
-                                </div>
-                            </div>
-
+                            {% endif %}
                         </div>
-
-
                     </div>
-
-
                 </div>
-
-
-
         </div>
     </div>
 </div>

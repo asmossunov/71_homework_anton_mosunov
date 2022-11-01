@@ -10,14 +10,11 @@ from posts.models import Comment
 from accounts.forms import CommentForm
 
 
-class PostCreateView(PermissionRequiredMixin, CreateView):
+class PostCreateView(LoginRequiredMixin, CreateView):
     template_name = 'create_post.html'
     form_class = PostForm
     model = Post
     permission_required = 'posts.add_post'
-
-    def has_permission(self):
-        return super().has_permission() or self.get_object().email == self.request.user
 
     def post(self, request, *args, **kwargs):
         form = self.form_class(request.POST, request.FILES)
@@ -54,7 +51,7 @@ class PostUpdateView(PermissionRequiredMixin, UpdateView):
     permission_required = 'posts.change_post'
 
     def has_permission(self):
-        return super().has_permission() or self.get_object().author == self.request.user
+        return self.get_object().author == self.request.user
 
 
     def get_success_url(self):
@@ -95,5 +92,5 @@ class PostDeleteView(PermissionRequiredMixin, DeleteView):
     permission_required = 'posts.change_post'
 
     def has_permission(self):
-        return super().has_permission() or self.get_object().author == self.request.user
+        return self.get_object().author == self.request.user
 

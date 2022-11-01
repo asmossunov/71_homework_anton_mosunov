@@ -108,7 +108,6 @@ class ProfileView(DetailView):
         account = self.object
         subscriptions = account.subscriptions.count()
         subscribers = account.subscribers.count()
-        # posts = account.posts.order_by('-created_at').exclude(is_deleted=True)
         posts = Post.objects.filter(author=account).order_by('-created_at').exclude(is_deleted=True)
         if self.search_value:
             context['accounts'] = self.get_queryset()
@@ -130,22 +129,7 @@ class UserChangeView(PermissionRequiredMixin, UpdateView):
     permission_required = 'accounts.change_account'
 
     def has_permission(self):
-        return super().has_permission() or self.get_object().email == self.request.user
-
-    # def dispatch(self, request, *args, **kwargs):
-    #     user = request.user
-    #     if not user.group.has_perm('accounts.change_account'):
-    #         raise PermissionDenied
-    #     return super().dispatch(request, *args, **kwargs)
-
-    # def dispatch(self, request, *args, **kwargs):
-    #     user = Account.objects.get(pk=self.kwargs.get('pk'))
-    #     if request.user.is_staff:
-    #         return super().dispatch(request, *args, **kwargs)
-    #     else:
-    #         if request.user != user.email:
-    #             raise PermissionDenied
-
+        return self.get_object().username == self.request.user.username
 
     def get_context_data(self, **kwargs):
         if 'profile_form' not in kwargs:
@@ -187,11 +171,7 @@ class UserPasswordChangeView(PermissionRequiredMixin, UpdateView):
     permission_required = 'accounts.change_account'
 
     def has_permission(self):
-        return super().has_permission() or self.get_object().email == self.request.user
-
-
-
-
+        return self.get_object().username == self.request.user.username
 
     def get_success_url(self):
         return reverse('login')

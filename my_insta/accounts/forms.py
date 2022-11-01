@@ -1,6 +1,7 @@
 from django import forms
 from django.core.exceptions import ValidationError
 from django.contrib.auth import get_user_model
+from django.contrib.auth.models import Group
 
 
 
@@ -40,9 +41,11 @@ class CustomUserCreationForm(forms.ModelForm):
     def save(self, commit=True):
         user = super().save(commit=False)
         user.set_password(self.cleaned_data.get('password'))
-        # user.groups.add('user')
         if commit:
             user.save()
+            group_name = 'basic'
+            group = Group.objects.get(name=group_name)
+            user.groups.add(group)
         return user
 
 
