@@ -4,7 +4,7 @@ from django.urls import reverse
 from django.db.models import Q
 from django.core.exceptions import PermissionDenied
 from django.views.generic import TemplateView, CreateView, DetailView, UpdateView
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from accounts.forms import LoginForm
 from django.core.paginator import Paginator
 
@@ -122,11 +122,29 @@ class ProfileView(DetailView):
         return context
 
 
-class UserChangeView(UpdateView):
+class UserChangeView(PermissionRequiredMixin, UpdateView):
     model = get_user_model()
     form_class = UserChangeForm
     template_name = 'user_change.html'
     context_object_name = 'user_obj'
+    permission_required = 'accounts.change_account'
+
+    def has_permission(self):
+        return super().has_permission() or self.get_object().email == self.request.user
+
+    # def dispatch(self, request, *args, **kwargs):
+    #     user = request.user
+    #     if not user.group.has_perm('accounts.change_account'):
+    #         raise PermissionDenied
+    #     return super().dispatch(request, *args, **kwargs)
+
+    # def dispatch(self, request, *args, **kwargs):
+    #     user = Account.objects.get(pk=self.kwargs.get('pk'))
+    #     if request.user.is_staff:
+    #         return super().dispatch(request, *args, **kwargs)
+    #     else:
+    #         if request.user != user.email:
+    #             raise PermissionDenied
 
 
     def get_context_data(self, **kwargs):
@@ -161,17 +179,25 @@ class UserChangeView(UpdateView):
         return reverse('profile', kwargs={'pk': self.object.pk})
 
 
-class UserPasswordChangeView(UpdateView):
+class UserPasswordChangeView(PermissionRequiredMixin, UpdateView):
     model = get_user_model()
     template_name = 'user_password_change.html'
     form_class = PasswordChangeForm
     context_object_name = 'user_obj'
+    permission_required = 'accounts.change_account'
+
+    def has_permission(self):
+        return super().has_permission() or self.get_object().email == self.request.user
+
+
+
+
 
     def get_success_url(self):
         return reverse('login')
 
 
-class ProfileFollowView(TemplateView):
+class ProfileFollowView(LoginRequiredMixin, TemplateView):
     template_name = 'profile.html'
 
     def post(self, request, *args, **kwargs):

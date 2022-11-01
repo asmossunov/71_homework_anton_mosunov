@@ -1,8 +1,8 @@
 from django.views.generic import CreateView, View, FormView, DetailView, UpdateView, DeleteView
 from django.urls import reverse
 from django.shortcuts import redirect, get_object_or_404
-from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from django.core.exceptions import PermissionDenied
+from django.contrib.auth.mixins import LoginRequiredMixin,  PermissionRequiredMixin
+
 
 from posts.forms import PostForm
 from posts.models import Post
@@ -10,16 +10,14 @@ from posts.models import Comment
 from accounts.forms import CommentForm
 
 
-class GroupPermission(UserPassesTestMixin):
-    groups = []
-
-    def test_func(self):
-        return self.request.user.groups.filter(name__in=self.groups).exists()
-
-class PostCreateView(LoginRequiredMixin, CreateView):
+class PostCreateView(PermissionRequiredMixin, CreateView):
     template_name = 'create_post.html'
     form_class = PostForm
     model = Post
+    permission_required = 'posts.add_post'
+
+    def has_permission(self):
+        return super().has_permission() or self.get_object().email == self.request.user
 
     def post(self, request, *args, **kwargs):
         form = self.form_class(request.POST, request.FILES)
@@ -48,16 +46,19 @@ class PostView(DetailView):
         return context
 
 
-class PostUpdateView(LoginRequiredMixin, UpdateView):
+class PostUpdateView(PermissionRequiredMixin, UpdateView):
     template_name = 'post_update.html'
     form_class = PostForm
     model = Post
     context_object_name = 'post'
-    # groups = ['user', 'admin']
+    permission_required = 'posts.change_post'
+
+    def has_permission(self):
+        return super().has_permission() or self.get_object().author == self.request.user
+
 
     def get_success_url(self):
         return reverse('post_detail', kwargs={'pk': self.object.pk})
-
 
 
 class PostLikeView(LoginRequiredMixin, View):
@@ -87,7 +88,12 @@ class CommentCreateView(LoginRequiredMixin, FormView):
         return redirect('index')
 
 
-class PostDeleteView(LoginRequiredMixin, DeleteView):
+class PostDeleteView(PermissionRequiredMixin, DeleteView):
     template_name = 'post_confirm_delete.html'
     model = Post
     success_url = '/'
+    permission_required = 'posts.change_post'
+
+    def has_permission(self):
+        return super().has_permission() or self.get_object().author == self.request.user
+

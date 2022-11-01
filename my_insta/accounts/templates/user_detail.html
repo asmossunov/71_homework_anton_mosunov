@@ -38,7 +38,7 @@
                                       {{ account.username }}</h1>
                               </div>
 
-
+<!--                              {% if request.user != account-->
                               <div class="col-3 ">
                                   <form action="{% url 'change' account.pk %}" method="POST">
                                       {% csrf_token %}
@@ -60,11 +60,11 @@
                           </div>
                       </div>
 
-                      {% if request.user != account%}
-                      <form action="{% url 'follow' account.pk %}" method="POST" >
-                          {% csrf_token %}
-                          {% bootstrap_button button_type="submit" content="Подписаться" %}
-                      </form>
+                      {% if request.user != account and account not in request.user.subscriptions.all %}
+                          <form action="{% url 'follow' account.pk %}" method="POST" >
+                              {% csrf_token %}
+                              {% bootstrap_button button_type="submit" content="Подписаться" %}
+                          </form>
                       {% endif %}
 
 
