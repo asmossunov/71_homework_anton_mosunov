@@ -17,11 +17,11 @@ class AuthorSerializer(serializers.ModelSerializer):
 
 class PostSerializer(serializers.ModelSerializer):
     author = AuthorSerializer(read_only=True)
-    # author = serializers.CharField(source='author.username', max_length=200)
+    author = serializers.IntegerField(source='author.id', read_only=True)
 
     class Meta:
         model = Post
         fields = ('id', 'description', 'author', 'comment_count', 'changed_at',
                   'created_at', 'like_count', 'is_deleted', 'image')
-        read_only_fields = ('id', 'author', 'created_at', 'updated_at', 'is_deleted')
+        read_only_fields = ('id', 'created_at', 'updated_at', 'is_deleted')
 
