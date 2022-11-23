@@ -42,6 +42,8 @@ INSTALLED_APPS = [
     'django_bootstrap5',
     'bootstrap3',
     'phonenumber_field',
+    'rest_framework',
+    'api'
 ]
 
 MIDDLEWARE = [

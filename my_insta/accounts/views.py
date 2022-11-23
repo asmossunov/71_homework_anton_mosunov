@@ -11,12 +11,9 @@ from django.core.paginator import Paginator
 from accounts.forms import CustomUserCreationForm
 
 from accounts.forms import UserChangeForm
-
 from posts.models import Post
 from accounts.models import Account
-
 from accounts.forms import PasswordChangeForm
-
 from accounts.forms import SearchForm
 
 
@@ -137,10 +134,10 @@ class UserChangeView(PermissionRequiredMixin, UpdateView):
         return super().get_context_data()
 
     def get_profile_form(self):
-        form_kwargs = {'instance': self.object}
-        if self.request.method == 'POST':
-            form_kwargs['data'] = self.request.POST
-        return UserChangeForm(**form_kwargs)
+        # form_kwargs = {'instance': self.object}
+        # if self.request.method == 'POST':
+            # form_kwargs['data'] = self.request.POST
+        return UserChangeForm(initial={'username': self.object.username, 'phone': self.object.phone})
 
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()
