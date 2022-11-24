@@ -1,14 +1,10 @@
 from rest_framework import serializers
 
-from posts.models import Post
-
+from posts.models import Post, Like, Comment
 from accounts.models import Account
-
-from posts.models import Like
 
 
 class AuthorSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = Account
         fields = ('id', 'password', 'last_login', 'is_superuser', 'username', 'first_name',
@@ -18,23 +14,23 @@ class AuthorSerializer(serializers.ModelSerializer):
 
 
 class LikeSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = Like
         fields = ('id', 'is_like', 'author', 'changed_at', 'posts', 'created_at',)
-        read_only_fields = ('id', 'created_at', 'updated_at', 'is_deleted')
+        read_only_fields = ('id', 'created_at', 'changed_at', 'is_deleted')
 
 
 class PostSerializer(serializers.ModelSerializer):
-    # posts_likes = LikeSerializer(read_only=True)
-    # author = serializers.IntegerField(source='author.id', read_only=True)
-
     class Meta:
         model = Post
         fields = ('id', 'description', 'author', 'comment_count', 'changed_at',
                   'created_at', 'like_count', 'is_deleted', 'image')
-        read_only_fields = ('id', 'created_at', 'updated_at', 'posts_likes', 'is_deleted')
+        read_only_fields = ('id', 'created_at', 'changed_at', 'posts_likes', 'is_deleted')
 
 
-
+class CommentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Comment
+        fields = ('id', 'author', 'post', 'post_name', 'text', 'is_deleted', 'changed_at', 'created_at',)
+        read_only_fields = ('id', 'created_at', 'changed_at', 'is_deleted')
 
