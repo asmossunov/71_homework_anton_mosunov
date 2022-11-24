@@ -10,5 +10,4 @@ router.register('likes', LikeView)
 router.register('comments', CommentView)
 urlpatterns = [
     path('', include(router.urls)),
-    path('login/', obtain_auth_token, name='obtain_auth_token'),
 ]
