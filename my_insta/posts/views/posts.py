@@ -9,6 +9,8 @@ from posts.models import Post
 from posts.models import Comment
 from accounts.forms import CommentForm
 
+from posts.models import Like
+
 
 class PostCreateView(LoginRequiredMixin, CreateView):
     template_name = 'create_post.html'
@@ -59,13 +61,21 @@ class PostUpdateView(PermissionRequiredMixin, UpdateView):
 
 
 class PostLikeView(LoginRequiredMixin, View):
-    model = Post
+    model = Like
 
-    def get(self, request, *args, **kwargs):
+    def post(self, request, *args, **kwargs):
         post = get_object_or_404(Post, pk=kwargs.get('pk'))
-        post.user_likes.add(request.user)
-        count = post.like_count
-        Post.objects.filter(id=post.id).update(like_count=(count + 1))
+
+        if not post.posts_likes.filter(author_id=request.user):
+            like = Like.objects.create(author=request.user, is_like=True)
+            like.posts.add(post)
+
+        else:
+            if post.posts_likes.filter(author_id=request.user).exclude(is_like=False):
+                post.posts_likes.filter(author_id=request.user).delete()
+
+                # post.posts_likes.filter(author_id=request.user).update(is_like=True)
+
         return redirect('index')
 
 

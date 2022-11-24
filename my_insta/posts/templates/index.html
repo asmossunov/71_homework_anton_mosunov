@@ -61,15 +61,41 @@
 
                                     <span class="like-row">
 
-                                        {% if request.user not in post.user_likes.all %}
-                                            <a href="{% url 'like' post.pk %}"><img class="likedhrt" src="{% static 'images/like.png' %}" alt="liked picture"class="img-responsive"> </a>
-                                        {% else %}
-                                             <img class="likehrt" src="{% static 'images/liked.png' %}" alt="not likedpicture" class="img-responsive">
-                                        {% endif %}
 
-                                        <a href="{% url 'post_detail' post.pk %}">
-                                        <img class="commenthrt" id='comment-icon' src="{% static 'images/comment.png' %}" class="img-responsive" alt=" commentImage"></a>
-                                        <p><strong>{{post.user_likes.all.count}} отметок "Нравится"</strong> </p>
+
+
+
+                                    {% if post.posts_likes.all %}
+                                        {% for like in post.posts_likes.all %}
+                                            {% if like.author != request.user %}
+                                            <form id="form-to-like" data-pk="{{post.pk}}" style="display: block;" action="" method="post">
+                                                {% csrf_token %}
+                                                <button data-pk="{{post.pk}}" id="btn-to-like"><img class="likedhrt" src="{% static 'images/like.png' %}" alt="liked picture"class="img-responsive"></button>
+                                            </form>
+                                            {% else %}
+                                            <form id="form-to-dislike" data-pk="{{post.pk}}" style="display: block;" action="" method="post">
+                                                {% csrf_token %}
+                                                <button data-pk="{{post.pk}}" id="btn-to-dislike"><img class="likedhrt" src="{% static 'images/liked.png' %}" alt="liked picture"class="img-responsive"></button>
+                                            </form>
+                                            {% endif %}
+                                        {% endfor%}
+                                    {% else %}
+                                        <form id="form-to-like-2" data-pk="{{post.pk}}" style="display: block;" action="" method="post">
+                                            {% csrf_token %}
+                                            <button data-pk="{{post.pk}}" id="btn-to-like-2"><img class="likedhrt" src="{% static 'images/like.png' %}" alt="liked picture"class="img-responsive"></button>
+                                        </form>
+
+                                        <form id="form-to-dislike" data-pk="{{post.pk}}" style="display: none;" action="" method="post">
+                                            {% csrf_token %}
+                                            <button data-pk="{{post.pk}}" id="btn-to-dislike"><img class="likedhrt" src="{% static 'images/liked.png' %}" alt="liked picture"class="img-responsive"></button>
+                                        </form>
+
+                                    {% endif %}
+
+
+
+                                        <a href="{% url 'post_detail' post.pk %}"></a>
+                                        <p><strong>{{post.posts_likes.all.count}} отметок "Нравится"</strong> </p>
 
 
                                         </p>
@@ -118,4 +144,7 @@
         </div>
     </div>
 </div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.js"></script>
+<script type="text/javascript" src="{% static 'js/like.js' %}"></script>
 {% endblock %}
