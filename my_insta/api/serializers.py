@@ -4,6 +4,8 @@ from posts.models import Post
 
 from accounts.models import Account
 
+from posts.models import Like
+
 
 class AuthorSerializer(serializers.ModelSerializer):
 
@@ -15,13 +17,24 @@ class AuthorSerializer(serializers.ModelSerializer):
         read_only_fields = ('id', 'gender', 'password', 'created_at', 'updated_at', 'is_deleted')
 
 
+class LikeSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Like
+        fields = ('id', 'is_like', 'author', 'changed_at', 'posts', 'created_at',)
+        read_only_fields = ('id', 'created_at', 'updated_at', 'is_deleted')
+
+
 class PostSerializer(serializers.ModelSerializer):
-    # author = AuthorSerializer(read_only=True)
+    # posts_likes = LikeSerializer(read_only=True)
     # author = serializers.IntegerField(source='author.id', read_only=True)
 
     class Meta:
         model = Post
         fields = ('id', 'description', 'author', 'comment_count', 'changed_at',
                   'created_at', 'like_count', 'is_deleted', 'image')
-        read_only_fields = ('id', 'created_at', 'updated_at', 'is_deleted')
+        read_only_fields = ('id', 'created_at', 'updated_at', 'posts_likes', 'is_deleted')
+
+
+
 
